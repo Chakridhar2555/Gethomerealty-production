@@ -1,4 +1,4 @@
-// File: /Users/chakrinaidu/Desktop/gethomerealty-verson-2/app/api/showings/route.ts
+// File: /Users/chakrinaidu/Desktop/chakri/get home realty production/app/api/showings/route.ts
 import * as entry from '../../../../../app/api/showings/route.js'
 import type { NextRequest } from 'next/server.js'
 

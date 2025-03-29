@@ -1,4 +1,4 @@
-// File: /Users/chakrinaidu/Desktop/gethomerealty-verson-2/app/lead/page.tsx
+// File: /Users/chakrinaidu/Desktop/chakri/get home realty production/app/lead/page.tsx
 import * as entry from '../../../../app/lead/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

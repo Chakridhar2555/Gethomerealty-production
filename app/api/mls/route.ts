@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 // Mark this route as dynamic and disable caching
 export const dynamic = 'force-dynamic';
@@ -7,8 +7,12 @@ export const fetchCache = 'force-no-store';
 export const revalidate = 0;
 
 // Ensure environment variables are set
-if (!process.env.MLS_ACCESS_TOKEN || !process.env.MLS_API_URL) {
-  throw new Error('Missing required environment variables: MLS_ACCESS_TOKEN and/or MLS_API_URL');
+if (!process.env.MLS_ACCESS_TOKEN) {
+  throw new Error('MLS_ACCESS_TOKEN is not defined in environment variables');
+}
+
+if (!process.env.MLS_API_URL) {
+  throw new Error('MLS_API_URL is not defined in environment variables');
 }
 
 interface MLSProperty {
@@ -23,6 +27,16 @@ interface MLSProperty {
   BathroomsTotalInteger: number;
   LivingArea: number;
   PropertyType: string;
+  ModificationTimestamp: string;
+  Media: Array<{
+    MediaKey: string;
+    MediaURL: string;
+    MediaType: string;
+  }>;
+  Features: Array<{
+    FeatureKey: string;
+    FeatureName: string;
+  }>;
 }
 
 interface Property {
@@ -37,6 +51,8 @@ interface Property {
   LivingArea: number;
   PropertyType: string;
   ListingStatus: string;
+  Images: string[];
+  Features: string[];
 }
 
 const PAGE_SIZE = 50;
@@ -114,7 +130,8 @@ export async function GET(request: Request) {
     const query = [
       '$top=' + PAGE_SIZE,
       '$skip=' + skip,
-      '$count=true'  // Always request count for pagination
+      '$count=true',  // Always request count for pagination
+      '$expand=Media,Features'  // Include media and features in the response
     ];
 
     // Add filter if conditions exist
@@ -164,31 +181,48 @@ export async function GET(request: Request) {
       throw new Error('Invalid response format from MLS API');
     }
 
+    // Transform the data to match our Property interface
+    const transformedProperties = response.data.value.map((property: MLSProperty) => ({
+      Id: property.ListingKey,
+      ListPrice: property.ListPrice,
+      Address: property.UnparsedAddress,
+      City: property.City,
+      Province: property.StateOrProvince,
+      PostalCode: property.PostalCode,
+      Bedrooms: property.BedroomsTotal,
+      Bathrooms: property.BathroomsTotalInteger,
+      LivingArea: property.LivingArea,
+      PropertyType: property.PropertyType,
+      ListingStatus: property.StandardStatus,
+      Images: property.Media?.filter(m => m.MediaType === 'Photo').map(m => m.MediaURL) || [],
+      Features: property.Features?.map(f => f.FeatureName) || []
+    }));
+
     // Calculate total pages
     const total = response.data['@odata.count'] || response.data.value.length;
     const totalPages = Math.ceil(total / PAGE_SIZE);
 
     return NextResponse.json({
-      properties: response.data.value,
+      properties: transformedProperties,
       total,
       page,
       pageSize: PAGE_SIZE,
       totalPages
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('MLS API Error:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      status: error instanceof AxiosError ? error.response?.status : undefined,
-      data: error instanceof AxiosError ? error.response?.data : undefined
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data
     });
 
     return NextResponse.json(
       {
         error: 'Failed to fetch MLS data',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error.message
       },
-      { status: error instanceof AxiosError ? error.response?.status || 500 : 500 }
+      { status: error.response?.status || 500 }
     );
   }
 }

@@ -1,4 +1,4 @@
-// File: /Users/chakrinaidu/Desktop/gethomerealty-verson-2/app/mls/page.tsx
+// File: /Users/chakrinaidu/Desktop/chakri/get home realty production/app/mls/page.tsx
 import * as entry from '../../../../app/mls/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
