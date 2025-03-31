@@ -13,7 +13,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { ArrowLeft, UserCog, Key, Shield, History, UserCircle, Mail } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { routes } from "@/lib/routes"
+import routes from "@/lib/routes"
 
 interface Permissions {
   dashboard: boolean;

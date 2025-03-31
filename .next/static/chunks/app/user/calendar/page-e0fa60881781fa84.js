@@ -1,0 +1,6 @@
+(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[9411],{70:function(n,e,s){Promise.resolve().then(s.bind(s,85277))},85277:function(n,e,s){"use strict";s.r(e),s.d(e,{default:function(){return i}});var t=s(3827),c=s(26863),r=s(27815);function i(){return(0,t.jsx)(c.c,{children:(0,t.jsxs)("div",{className:"space-y-6",children:[(0,t.jsx)("h1",{className:"text-2xl font-semibold",children:"Calendar"}),(0,t.jsxs)(r.Zb,{children:[(0,t.jsx)(r.Ol,{children:(0,t.jsx)(r.ll,{children:"Upcoming Events"})}),(0,t.jsx)(r.aY,{children:(0,t.jsx)("p",{className:"text-gray-500",children:"No upcoming events"})})]})]})})}},49108:function(n,e,s){"use strict";s.d(e,{Z:function(){return t}});/**
+ * @license lucide-react v0.454.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */let t=(0,s(57977).Z)("ChevronLeft",[["path",{d:"m15 18-6-6 6-6",key:"1wnfg3"}]])}},function(n){n.O(0,[6860,9593,8792,162,703,4885,4011,6863,2971,8069,1744],function(){return n(n.s=70)}),_N_E=n.O()}]);

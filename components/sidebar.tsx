@@ -34,7 +34,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
-import { routes } from "@/lib/routes"
+import { cn } from "@/lib/utils"
+import { useNotifications } from "@/lib/notifications"
+import routes from "@/lib/routes"
 
 interface SidebarItem {
   icon: any;
@@ -118,59 +120,54 @@ export function Sidebar() {
 
   const unreadCount = mounted ? notifications.filter(n => !n.read).length : 0
 
-  const sidebarItems: SidebarItem[] = [
-    { 
-      icon: LayoutDashboard, 
-      label: "Dashboard", 
-      href: routes.dashboard 
+  const navigation = [
+    {
+      label: "Dashboard",
+      href: routes.dashboard,
+      icon: <LayoutDashboard className="h-5 w-5" />,
     },
-    { 
-      icon: Users, 
-      label: "Lead", 
-      href: routes.leads 
+    {
+      label: "Leads",
+      href: routes.leads,
+      icon: <Users className="h-5 w-5" />,
     },
-    { 
-      icon: Heart, 
-      label: "Favorites", 
-      href: routes.favorites 
+    {
+      label: "Inbox",
+      href: routes.inbox,
+      icon: <Mail className="h-5 w-5" />,
     },
-    { 
-      icon: Inbox, 
-      label: "Inbox", 
-      href: routes.inbox 
+    {
+      label: "Calendar",
+      href: routes.calendar,
+      icon: <Calendar className="h-5 w-5" />,
     },
-    { 
-      icon: Package, 
-      label: "Inventory", 
-      href: routes.inventory 
+    {
+      label: "Inventory",
+      href: routes.inventory,
+      icon: <Building2 className="h-5 w-5" />,
     },
-    { 
-      icon: Mail, 
-      label: "Communication", 
-      href: routes.communication 
+    {
+      label: "Email Templates",
+      href: routes.emailTemplates,
+      icon: <Mail className="h-5 w-5" />,
     },
-    { 
-      icon: ScrollText, 
-      label: "MLS", 
-      href: routes.mls 
+    {
+      label: "Users",
+      href: routes.users,
+      icon: <Users className="h-5 w-5" />,
     },
-    { 
-      icon: Calendar, 
-      label: "Calendar", 
-      href: routes.calendar 
+    {
+      label: "Settings",
+      href: routes.settings,
+      icon: <Settings className="h-5 w-5" />,
     },
-    { 
-      icon: Settings, 
-      label: "Settings", 
-      href: routes.settings 
-    }
-  ]
+  ];
 
   return (
     <div className="w-64 bg-white border-r h-screen p-4 flex flex-col">
       <div className="text-red-500 text-xl font-semibold mb-8">Get Home Realty</div>
       <nav className="space-y-2 flex-grow">
-        {sidebarItems.map((item) => (
+        {navigation.map((item) => (
           <Link
             key={item.label}
             href={item.href}
@@ -181,7 +178,7 @@ export function Sidebar() {
               }`}
           >
             <div className="flex items-center space-x-3">
-              <item.icon className="h-5 w-5" />
+              {item.icon}
               <span>{item.label}</span>
             </div>
           </Link>

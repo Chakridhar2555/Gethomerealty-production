@@ -33,7 +33,7 @@ import {
   X,
   Menu
 } from "lucide-react"
-import { routes } from "@/lib/routes"
+import routes from "@/lib/routes"
 
 interface SearchResult {
   id: string

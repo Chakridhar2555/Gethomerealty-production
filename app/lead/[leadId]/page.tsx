@@ -18,6 +18,19 @@ import type { Lead, Task } from "@/lib/types"
 import { ShowingCalendar } from "@/components/showing-calendar"
 import { TaskManager } from "@/components/task-manager"
 
+interface CallPoint {
+  text: string;
+  timestamp?: string;
+}
+
+interface Showing {
+  id: string;
+  date: string;
+  time: string;
+  property: string;
+  notes?: string;
+}
+
 const leadStatuses = [
   { value: 'cold', label: 'Cold' },
   { value: 'warm', label: 'Warm' },
@@ -584,7 +597,7 @@ export default function LeadDetailPage() {
                           <div className="space-y-2">
                             <Label className="text-sm font-medium">Key Points:</Label>
                             <ul className="space-y-1">
-                              {call.points.map((point, pointIndex) => (
+                              {call.points.map((point: CallPoint, pointIndex: number) => (
                                 <li key={pointIndex} className="text-sm flex items-start gap-2">
                                   <span className="mt-1">•</span>
                                   <span>{point.text}</span>
@@ -625,7 +638,7 @@ export default function LeadDetailPage() {
                   </div>
                   
                   <div className="space-y-2">
-                    {leadData?.notes?.split('\n\n').map((note, index) => (
+                    {leadData?.notes?.split('\n\n').map((note: string, index: number) => (
                       <div key={index} className="text-sm border-b pb-2">
                         {note}
                       </div>

@@ -60,19 +60,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     }
   }, [router]);
 
-  const navigationItems = [
+  const navigation = [
     { href: '/dashboard', icon: <LayoutDashboard className="h-5 w-5" />, label: 'Dashboard' },
-    { href: '/lead', icon: <Users className="h-5 w-5" />, label: 'Lead' },
-    ...(user?.permissions?.favorites ? [{
-      href: '/favorites',
-      icon: <Heart className="h-5 w-5" />,
-      label: 'Favorites'
-    }] : []),
+    { href: '/lead', icon: <Users className="h-5 w-5" />, label: 'Leads' },
     { href: '/inbox', icon: <Mail className="h-5 w-5" />, label: 'Inbox' },
-    { href: '/inventory', icon: <Home className="h-5 w-5" />, label: 'Inventory' },
-    { href: '/users', icon: <Users className="h-5 w-5" />, label: 'Users' },
-    { href: '/mls', icon: <Building className="h-5 w-5" />, label: 'MLS' },
     { href: '/calendar', icon: <Calendar className="h-5 w-5" />, label: 'Calendar' },
+    { href: '/inventory', icon: <Building className="h-5 w-5" />, label: 'Inventory' },
+    { href: '/email-templates', icon: <Mail className="h-5 w-5" />, label: 'Email Templates' },
+    { href: '/users', icon: <Users className="h-5 w-5" />, label: 'Users' },
     { href: '/settings', icon: <Settings className="h-5 w-5" />, label: 'Settings' },
   ];
 
@@ -239,7 +234,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </div>
           <nav className="flex flex-col h-[calc(100%-3.5rem)] sm:h-[calc(100%-4rem)] p-3 sm:p-4">
             <div className="grid grid-cols-2 sm:grid-cols-1 gap-2 sm:space-y-1">
-              {navigationItems.map((item) => (
+              {navigation.map((item) => (
           <Link
                   key={item.href}
                   href={item.href}

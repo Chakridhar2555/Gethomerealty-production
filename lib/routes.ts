@@ -1,19 +1,17 @@
 // Create a new file for centralized route management
-export const routes = {
-  // Main routes
+const routes = {
+  home: '/',
+  login: '/login',
+  forgotPassword: '/forgot-password',
   dashboard: '/dashboard',
-  leads: '/leads',
-  favorites: '/favorites',
+  leads: '/lead',
   inbox: '/inbox',
-  inventory: '/inventory',
   calendar: '/calendar',
-  users: '/users',
-  notifications: '/notifications',
-  sendNotifications: '/send-notifications',
   settings: '/settings',
+  users: '/users',
   emailTemplates: '/email-templates',
-  mls: '/mls',
-  communication: '/communication',
+  inventory: '/inventory',
+  notifications: '/send-notifications',
 
   // User related routes
   userProfile: (userId: string) => `/users/${userId}`,
@@ -37,4 +35,6 @@ export const routes = {
   settingsSecurity: '/settings/security',
   settingsEmail: '/settings/email',
   settingsBusiness: '/settings/business',
-} 
+} as const;
+
+export default routes; 

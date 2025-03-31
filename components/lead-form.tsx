@@ -31,6 +31,33 @@ const leadTypes = [
   { value: 'buyer', label: 'Buyer' },
 ];
 
+const leadConversions = [
+  { value: 'initial_contact', label: 'Initial Contact' },
+  { value: 'property_viewing', label: 'Property Viewing' },
+  { value: 'offer_made', label: 'Offer Made' },
+  { value: 'offer_accepted', label: 'Offer Accepted' },
+  { value: 'deal_closed', label: 'Deal Closed' },
+  { value: 'deal_lost', label: 'Deal Lost' },
+];
+
+const languages = [
+  { value: 'english', label: 'English' },
+  { value: 'french', label: 'French' },
+  { value: 'mandarin', label: 'Mandarin' },
+  { value: 'hindi', label: 'Hindi' },
+  { value: 'punjabi', label: 'Punjabi' },
+];
+
+const religions = [
+  { value: 'christianity', label: 'Christianity' },
+  { value: 'islam', label: 'Islam' },
+  { value: 'hinduism', label: 'Hinduism' },
+  { value: 'sikhism', label: 'Sikhism' },
+  { value: 'buddhism', label: 'Buddhism' },
+  { value: 'jainism', label: 'Jainism' },
+  { value: 'other', label: 'Other' },
+];
+
 interface LeadStrategy {
   lastUpdated: string;
   tasks: any[];
@@ -66,6 +93,16 @@ interface LeadFormData {
   notes: string;
   assignedTo: string;
   location: string;
+  conversion: string;
+  age: number;
+  language: string;
+  gender: string;
+  religion: string;
+  realtorAssociation: string;
+  salesHistory: {
+    closedSales: number;
+    lastClosedDate: string;
+  };
 }
 
 interface LeadFormProps {
@@ -88,6 +125,16 @@ export function LeadForm({ open, onClose, lead }: LeadFormProps) {
     notes: lead?.notes ?? "",
     assignedTo: lead?.assignedTo ?? "unassigned",
     location: lead?.location ?? "",
+    conversion: lead?.conversion ?? "initial_contact",
+    age: lead?.age ?? 0,
+    language: lead?.language ?? "english",
+    gender: lead?.gender ?? "",
+    religion: lead?.religion ?? "",
+    realtorAssociation: lead?.realtorAssociation ?? "",
+    salesHistory: lead?.salesHistory ?? {
+      closedSales: 0,
+      lastClosedDate: new Date().toISOString(),
+    },
   })
 
   useEffect(() => {
@@ -141,6 +188,13 @@ export function LeadForm({ open, onClose, lead }: LeadFormProps) {
         leadSource: "google ads",
         clientType: "custom buyer",
         location: leadData.location,
+        conversion: leadData.conversion,
+        age: leadData.age,
+        language: leadData.language,
+        gender: leadData.gender,
+        religion: leadData.religion,
+        realtorAssociation: leadData.realtorAssociation,
+        salesHistory: leadData.salesHistory,
       }
 
       const response = await fetch('/api/leads', {
@@ -172,6 +226,16 @@ export function LeadForm({ open, onClose, lead }: LeadFormProps) {
         notes: "",
         assignedTo: "unassigned",
         location: "",
+        conversion: "initial_contact",
+        age: 0,
+        language: "english",
+        gender: "",
+        religion: "",
+        realtorAssociation: "",
+        salesHistory: {
+          closedSales: 0,
+          lastClosedDate: new Date().toISOString(),
+        },
       })
 
       // Close dialog and refresh the leads
@@ -323,6 +387,134 @@ export function LeadForm({ open, onClose, lead }: LeadFormProps) {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Lead Conversion</Label>
+              <Select
+                value={leadData.conversion}
+                onValueChange={(value) => setLeadData({ ...leadData, conversion: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select conversion stage" />
+                </SelectTrigger>
+                <SelectContent>
+                  {leadConversions.map((conversion) => (
+                    <SelectItem key={conversion.value} value={conversion.value}>
+                      {conversion.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Realtor Association</Label>
+              <Input
+                value={leadData.realtorAssociation}
+                onChange={(e) => setLeadData({ ...leadData, realtorAssociation: e.target.value })}
+                placeholder="Enter realtor association"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Age</Label>
+              <Input
+                type="number"
+                value={leadData.age}
+                onChange={(e) => setLeadData({ ...leadData, age: parseInt(e.target.value) })}
+                placeholder="Enter age"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Gender</Label>
+              <Select
+                value={leadData.gender}
+                onValueChange={(value) => setLeadData({ ...leadData, gender: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select gender" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="male">Male</SelectItem>
+                  <SelectItem value="female">Female</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Language</Label>
+              <Select
+                value={leadData.language}
+                onValueChange={(value) => setLeadData({ ...leadData, language: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select language" />
+                </SelectTrigger>
+                <SelectContent>
+                  {languages.map((lang) => (
+                    <SelectItem key={lang.value} value={lang.value}>
+                      {lang.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Religion</Label>
+              <Select
+                value={leadData.religion}
+                onValueChange={(value) => setLeadData({ ...leadData, religion: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select religion" />
+                </SelectTrigger>
+                <SelectContent>
+                  {religions.map((religion) => (
+                    <SelectItem key={religion.value} value={religion.value}>
+                      {religion.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Closed Sales</Label>
+              <Input
+                type="number"
+                value={leadData.salesHistory.closedSales}
+                onChange={(e) => setLeadData({
+                  ...leadData,
+                  salesHistory: {
+                    ...leadData.salesHistory,
+                    closedSales: parseInt(e.target.value)
+                  }
+                })}
+                placeholder="Number of closed sales"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Last Closed Date</Label>
+              <Input
+                type="date"
+                value={leadData.salesHistory.lastClosedDate.split('T')[0]}
+                onChange={(e) => setLeadData({
+                  ...leadData,
+                  salesHistory: {
+                    ...leadData.salesHistory,
+                    lastClosedDate: new Date(e.target.value).toISOString()
+                  }
+                })}
+              />
+            </div>
           </div>
 
           <div className="flex justify-end gap-2">

@@ -44,62 +44,43 @@ export interface Task {
 }
 
 export interface Lead {
-  _id: string;
+  _id?: string;
   name: string;
   email: string;
   phone: string;
-  status: string;
+  leadStatus: string;
+  leadType: string;
   property: string;
-  location: string;  // Add location field
-  date: string;  // ISO date string format
   notes: string;
-  leadStatus: 'cold' | 'warm' | 'hot' | 'mild';
-  leadResponse: 'active' | 'inactive' | 'not answering' | 'not actively answering' | 'always responding';
-  leadSource: 'website' | 'google ads' | 'meta' | 'refferal' | 'linkedin' | 'youtube';
-  leadType: 'Pre construction' | 'resale' | 'seller' | 'buyer';
-  clientType: 'Investor' | 'custom buyer' | 'first home buyer' | 'seasonal investor' | 'commercial buyer';
-  assignedTo?: string; // ID of the assigned user
-  callHistory: Array<{
-    date: string;  // ISO date string format
-    duration: number;
-    recording?: string;
-    points?: Array<{
-      text: string;
-      timestamp: string;  // ISO date string format
-    }>;
-  }>;
-  propertyPreferences?: {
+  assignedTo?: string;
+  date: string;
+  callHistory: any[];
+  tasks: any[];
+  showings?: Showing[];
+  propertyPreferences: {
     budget: {
       min: number;
       max: number;
     };
-    propertyType: string[]; // ['detached', 'semi-detached', 'townhouse', 'condo']
+    propertyType: string[];
     bedrooms: number;
     bathrooms: number;
-    locations: string[]; // Preferred neighborhoods/cities
-    features: string[]; // ['garage', 'basement', 'pool', etc]
+    locations: string[];
+    features: string[];
   };
-  mortgageDetails?: {
-    preApproved: boolean;
-    lender?: string;
-    preApprovalAmount?: number;
-    downPayment?: number;
-    mortgageType?: string; // 'fixed' | 'variable'
+  leadResponse: string;
+  leadSource: string;
+  clientType: string;
+  location: string;
+  // New fields
+  conversion: string;
+  age: number;
+  language: string;
+  gender: string;
+  religion: string;
+  realtorAssociation: string;
+  salesHistory: {
+    closedSales: number;
+    lastClosedDate: string;
   };
-  documents?: Array<{
-    type: string; // 'id', 'preApproval', 'offer', 'agreement'
-    name: string;
-    url: string;
-    dateUploaded: string;
-  }>;
-  showings?: Showing[];
-  tasks?: Task[];
-  offers?: Array<{
-    propertyAddress: string;
-    offerAmount: number;
-    offerDate: string;
-    status: string; // 'pending', 'accepted', 'rejected', 'countered'
-    conditions: string[];
-    closingDate?: string;
-  }>;
 } 
