@@ -1,19 +1,46 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState, useEffect } from "react"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { CalendarHeader } from "@/components/calendar/calendar-header"
 import { CalendarGrid } from "@/components/calendar/calendar-grid"
 import { CalendarSidebar } from "@/components/calendar/calendar-sidebar"
 import { CalendarEvent } from "@/lib/types"
 import { DashboardLayout } from "@/components/layout"
+import { useRouter } from "next/navigation"
 
 export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [events, setEvents] = useState<CalendarEvent[]>([])
+  const router = useRouter()
+  const [user, setUser] = useState<any>(null)
+
+  useEffect(() => {
+    // Get user data from localStorage
+    const userData = localStorage.getItem('user')
+    if (userData) {
+      const parsedUser = JSON.parse(userData)
+      setUser(parsedUser)
+      
+      // Redirect based on role
+      if (parsedUser.role !== "Administrator" && !window.location.pathname.startsWith('/user')) {
+        router.push('/user/calendar')
+      }
+    } else {
+      router.push('/login')
+    }
+  }, [router])
 
   const handleEventClick = (event: CalendarEvent) => {
     setSelectedDate(new Date(event.start))
+  }
+
+  if (!user) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gray-50">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    )
   }
 
   return (

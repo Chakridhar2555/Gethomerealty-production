@@ -2,49 +2,47 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  const userCookie = request.cookies.get('user')
-  const isAuthPage = request.nextUrl.pathname === '/login'
-  const isUserPath = request.nextUrl.pathname.startsWith('/user/')
-  const isAdminPath = request.nextUrl.pathname.startsWith('/dashboard') || 
-                     request.nextUrl.pathname.startsWith('/users') ||
-                     request.nextUrl.pathname.startsWith('/settings') ||
-                     request.nextUrl.pathname.startsWith('/lead') ||
-                     request.nextUrl.pathname.startsWith('/calendar') ||
-                     request.nextUrl.pathname.startsWith('/inventory')
+  // Get the pathname
+  const path = request.nextUrl.pathname
 
-  // Debug logs
-  console.log('Current path:', request.nextUrl.pathname)
-  console.log('User cookie:', userCookie)
-  console.log('Is auth page:', isAuthPage)
-  console.log('Is user path:', isUserPath)
-  console.log('Is admin path:', isAdminPath)
+  // Get the token from cookies
+  const token = request.cookies.get('token')?.value
+  const user = token ? JSON.parse(atob(token.split('.')[1])) : null
 
-  if (!userCookie && !isAuthPage) {
-    console.log('Redirecting to login')
+  // Public paths that don't require authentication
+  const publicPaths = ['/login', '/forgot-password', '/reset-password']
+  if (publicPaths.includes(path)) {
+    if (token) {
+      // If user is logged in, redirect based on role
+      if (user.role === 'Administrator') {
+        return NextResponse.redirect(new URL('/dashboard', request.url))
+      } else {
+        return NextResponse.redirect(new URL('/user/dashboard', request.url))
+      }
+    }
+    return NextResponse.next()
+  }
+
+  // Check if user is authenticated
+  if (!token) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  if (userCookie) {
-    const user = JSON.parse(userCookie.value)
-    const isAdmin = user.role === "Administrator"
+  // Admin paths
+  const adminPaths = ['/dashboard', '/calendar', '/settings', '/users']
+  // User paths
+  const userPaths = ['/user/dashboard', '/user/calendar', '/user/settings']
 
-    if (isAuthPage) {
-      // Redirect logged-in users away from login page
-      console.log('Redirecting from login to appropriate dashboard')
-      return NextResponse.redirect(
-        new URL(isAdmin ? '/dashboard' : '/user/dashboard', request.url)
-      )
-    }
-
-    // Prevent non-admins from accessing admin paths
-    if (!isAdmin && isAdminPath) {
-      console.log('Non-admin attempting to access admin path')
+  // Handle admin routes
+  if (adminPaths.some(p => path.startsWith(p))) {
+    if (user.role !== 'Administrator') {
       return NextResponse.redirect(new URL('/user/dashboard', request.url))
     }
+  }
 
-    // Prevent admins from accessing user paths
-    if (isAdmin && isUserPath) {
-      console.log('Admin attempting to access user path')
+  // Handle user routes
+  if (userPaths.some(p => path.startsWith(p))) {
+    if (user.role === 'Administrator') {
       return NextResponse.redirect(new URL('/dashboard', request.url))
     }
   }
@@ -54,13 +52,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/dashboard/:path*',
-    '/users/:path*',
-    '/lead/:path*',
-    '/calendar/:path*',
-    '/settings/:path*',
-    '/inventory/:path*',
-    '/user/:path*',
-    '/login'
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 } 

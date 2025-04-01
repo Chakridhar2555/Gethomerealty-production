@@ -1,14 +1,3 @@
 {
-  "/page": "app/page.js",
-  "/api/auth/route": "app/api/auth/route.js",
-  "/dashboard/page": "app/dashboard/page.js",
-  "/api/leads/route": "app/api/leads/route.js",
-  "/lead/page": "app/lead/page.js",
-  "/api/users/route": "app/api/users/route.js",
-  "/inbox/page": "app/inbox/page.js",
-  "/calendar/page": "app/calendar/page.js",
-  "/inventory/page": "app/inventory/page.js",
-  "/email-templates/page": "app/email-templates/page.js",
-  "/users/page": "app/users/page.js",
-  "/settings/page": "app/settings/page.js"
+  "/login/page": "app/login/page.js"
 }
