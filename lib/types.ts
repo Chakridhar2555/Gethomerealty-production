@@ -83,4 +83,13 @@ export interface Lead {
     closedSales: number;
     lastClosedDate: string;
   };
+}
+
+export interface CalendarEvent {
+  id: string
+  title: string
+  start: Date
+  end: Date
+  type?: string
+  description?: string
 } 

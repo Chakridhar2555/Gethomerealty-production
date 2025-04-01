@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { format, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval, addDays, isValid } from 'date-fns'
+import { format, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval, addDays, isValid, isSameMonth, isToday } from 'date-fns'
 import { Clock, Plus, ChevronLeft, ChevronRight } from "lucide-react"
 import { useRouter } from 'next/navigation'
+import { cn } from "@/lib/utils"
+import { CalendarEvent } from "@/lib/types"
 
 interface Event {
   id: string
@@ -23,41 +25,28 @@ interface Event {
 }
 
 interface CalendarGridProps {
-  selectedDate: Date;
-  onDateChange: (date: Date) => void;
+  events: CalendarEvent[]
+  selectedDate: Date
+  onDateSelect: (date: Date) => void
 }
 
-export function CalendarGrid({ selectedDate, onDateChange }: CalendarGridProps) {
+export function CalendarGrid({ events, selectedDate, onDateSelect }: CalendarGridProps) {
   const router = useRouter()
-  const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
-  const [events, setEvents] = useState<Event[]>([])
-  const [currentDate, setCurrentDate] = useState<Date>(new Date())
+  const startOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1)
+  const endOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0)
+  const startDay = startOfMonth.getDay()
+  const daysInMonth = endOfMonth.getDate()
 
-  useEffect(() => {
-    if (selectedDate && isValid(selectedDate)) {
-      setCurrentDate(selectedDate)
-    }
-  }, [selectedDate])
+  const days = []
+  for (let i = 0; i < startDay; i++) {
+    days.push(null)
+  }
+  for (let i = 1; i <= daysInMonth; i++) {
+    days.push(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), i))
+  }
 
-  useEffect(() => {
-    const savedEvents = localStorage.getItem('calendar_events')
-    if (savedEvents) {
-      try {
-        const parsedEvents = JSON.parse(savedEvents).map((event: any) => ({
-          ...event,
-          date: new Date(event.date)
-        }))
-        setEvents(parsedEvents)
-      } catch (error) {
-        console.error('Error parsing events:', error)
-        setEvents([])
-      }
-    }
-  }, [])
-
-  const getDayEvents = (date: Date) => {
-    if (!isValid(date)) return []
-    return events.filter(event => isSameDay(event.date, date))
+  const getEventsForDate = (date: Date) => {
+    return events.filter((event) => isSameDay(new Date(event.start), date))
   }
 
   const getEventTypeColor = (type: Event['type']) => {
@@ -77,45 +66,24 @@ export function CalendarGrid({ selectedDate, onDateChange }: CalendarGridProps) 
   }
 
   const handlePrevMonth = () => {
-    const prevMonth = new Date(currentDate)
+    const prevMonth = new Date(selectedDate)
     prevMonth.setMonth(prevMonth.getMonth() - 1)
-    if (isValid(prevMonth) && typeof onDateChange === 'function') {
-      onDateChange(prevMonth)
+    if (isValid(prevMonth) && typeof onDateSelect === 'function') {
+      onDateSelect(prevMonth)
     }
   }
 
   const handleNextMonth = () => {
-    const nextMonth = new Date(currentDate)
+    const nextMonth = new Date(selectedDate)
     nextMonth.setMonth(nextMonth.getMonth() + 1)
-    if (isValid(nextMonth) && typeof onDateChange === 'function') {
-      onDateChange(nextMonth)
+    if (isValid(nextMonth) && typeof onDateSelect === 'function') {
+      onDateSelect(nextMonth)
     }
   }
 
-  if (!isValid(currentDate)) {
-    setCurrentDate(new Date())
+  if (!isValid(selectedDate)) {
     return null
   }
-
-  // Get the first day of the month
-  const monthStart = startOfMonth(currentDate)
-  const monthEnd = endOfMonth(currentDate)
-  
-  // Get all days in the month
-  const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd })
-  
-  // Calculate padding days for the start of the month
-  const startDay = monthStart.getDay()
-  const paddingDays = Array.from({ length: startDay }, (_, index) => {
-    const paddedDate = addDays(monthStart, -startDay + index)
-    return { date: paddedDate, isPadding: true }
-  })
-  
-  // Combine padding days with month days
-  const allDays = [
-    ...paddingDays,
-    ...monthDays.map(date => ({ date, isPadding: false }))
-  ]
 
   return (
     <div className="bg-white rounded-lg shadow">
@@ -124,44 +92,55 @@ export function CalendarGrid({ selectedDate, onDateChange }: CalendarGridProps) 
           <ChevronLeft className="h-4 w-4" />
         </Button>
         <h2 className="text-lg font-semibold px-4">
-          {format(currentDate, 'MMMM yyyy')}
+          {format(selectedDate, 'MMMM yyyy')}
         </h2>
         <Button variant="ghost" size="icon" onClick={handleNextMonth}>
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
-      <div className="grid grid-cols-7 border-b">
-        {days.map((day) => (
-          <div key={day} className="py-2 text-center text-sm font-medium text-gray-600">
+      <div className="grid grid-cols-7 gap-px bg-gray-200 min-w-[640px]">
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+          <div
+            key={day}
+            className="bg-white p-1 sm:p-2 text-center text-xs sm:text-sm font-medium text-gray-500"
+          >
             {day}
           </div>
         ))}
-      </div>
-      <div className="grid grid-cols-7 auto-rows-fr divide-x divide-y">
-        {allDays.map(({ date, isPadding }, i) => (
-          <Button
-            key={date.toISOString()}
-            variant="ghost"
-            className={`h-32 p-2 flex flex-col items-start justify-start hover:bg-gray-50 relative ${
-              !isPadding && isSameDay(date, new Date()) ? 'bg-primary/5' : ''
-            }`}
-            onClick={() => !isPadding && handleDayClick(date)}
-            disabled={isPadding}
+        {days.map((date, index) => (
+          <div
+            key={index}
+            className={cn(
+              "bg-white p-1 sm:p-2 min-h-[80px] sm:min-h-[100px] md:min-h-[120px]",
+              !date && "bg-gray-50",
+              date && !isSameMonth(date, selectedDate) && "text-gray-400",
+              date && isToday(date) && "bg-red-50"
+            )}
           >
-            <span className={`text-sm ${isPadding ? 'text-gray-300' : 'text-gray-500'}`}>
-              {format(date, 'd')}
-            </span>
-            {!isPadding && getDayEvents(date).map((event, index) => (
-              <div 
-                key={index} 
-                className={`mt-1 text-xs p-1 rounded w-full truncate flex items-center gap-1 ${getEventTypeColor(event.type)}`}
-                title={`${event.title}${event.time ? ` - ${event.time}` : ''}\n${event.description || ''}`}
-              >
-                {event.time && <Clock className="h-3 w-3" />}
-                {event.title}
-              </div>
-            ))}
-          </Button>
+            {date && (
+              <>
+                <div
+                  className={cn(
+                    "text-xs sm:text-sm font-medium mb-1",
+                    isToday(date) && "text-red-500"
+                  )}
+                >
+                  {format(date, "d")}
+                </div>
+                <div className="space-y-0.5 sm:space-y-1">
+                  {getEventsForDate(date).map((event) => (
+                    <div
+                      key={event.id}
+                      className="text-[10px] sm:text-xs p-0.5 sm:p-1 rounded bg-red-100 text-red-700 truncate cursor-pointer hover:bg-red-200"
+                      onClick={() => onDateSelect(date)}
+                    >
+                      {event.title}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         ))}
       </div>
     </div>

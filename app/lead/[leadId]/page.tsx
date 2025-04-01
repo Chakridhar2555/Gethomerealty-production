@@ -335,12 +335,12 @@ export default function LeadDetailPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 p-6">
-        <div className="flex items-center justify-between">
+      <div className="space-y-6 p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <Button 
             variant="outline" 
             onClick={() => router.back()}
-            className="border-black text-black hover:bg-black hover:text-white"
+            className="border-black text-black hover:bg-black hover:text-white w-full sm:w-auto"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Leads
@@ -348,62 +348,64 @@ export default function LeadDetailPage() {
           <Button 
             onClick={handleSubmit} 
             disabled={isLoading}
-            className="bg-[#ef4444] hover:bg-[#dc2626] text-white"
+            className="bg-[#ef4444] hover:bg-[#dc2626] text-white w-full sm:w-auto"
           >
             <Save className="h-4 w-4 mr-2" />
             Save Changes
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
               <CardTitle>Lead Information</CardTitle>
             </CardHeader>
             <CardContent>
               <form className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Name</Label>
-                  <Input
-                    value={leadData.name}
-                    onChange={(e) => setLeadData({ ...leadData, name: e.target.value })}
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Name</Label>
+                    <Input
+                      value={leadData.name}
+                      onChange={(e) => setLeadData({ ...leadData, name: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Email</Label>
+                    <Input
+                      type="email"
+                      value={leadData.email}
+                      onChange={(e) => setLeadData({ ...leadData, email: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Phone</Label>
+                    <Input
+                      value={leadData.phone}
+                      onChange={(e) => setLeadData({ ...leadData, phone: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Assigned To</Label>
+                    <Select
+                      value={leadData.assignedTo || 'unassigned'}
+                      onValueChange={(value) => setLeadData({ ...leadData, assignedTo: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a user" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="unassigned">Unassigned</SelectItem>
+                        {users.map((user) => (
+                          <SelectItem key={user._id} value={user._id}>
+                            {user.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label>Email</Label>
-                  <Input
-                    type="email"
-                    value={leadData.email}
-                    onChange={(e) => setLeadData({ ...leadData, email: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Phone</Label>
-                  <Input
-                    value={leadData.phone}
-                    onChange={(e) => setLeadData({ ...leadData, phone: e.target.value })}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label>Assigned To</Label>
-                  <Select
-                    value={leadData.assignedTo || 'unassigned'}
-                    onValueChange={(value) => setLeadData({ ...leadData, assignedTo: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a user" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="unassigned">Unassigned</SelectItem>
-                      {users.map((user) => (
-                        <SelectItem key={user._id} value={user._id}>
-                          {user.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+
                 <div className="space-y-2">
                   <Label>Property</Label>
                   <Input
@@ -411,31 +413,35 @@ export default function LeadDetailPage() {
                     onChange={(e) => setLeadData({ ...leadData, property: e.target.value })}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label>Location</Label>
-                  <Select
-                    value={leadData.location || ""}
-                    onValueChange={(value) => setLeadData({ ...leadData, location: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select location" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {locations.map((location) => (
-                        <SelectItem key={location.value} value={location.value}>
-                          {location.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Created Date</Label>
-                  <div className="text-sm text-gray-500">
-                    {formatDate(leadData.date)}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Location</Label>
+                    <Select
+                      value={leadData.location || ""}
+                      onValueChange={(value) => setLeadData({ ...leadData, location: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select location" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {locations.map((location) => (
+                          <SelectItem key={location.value} value={location.value}>
+                            {location.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Created Date</Label>
+                    <div className="text-sm text-gray-500">
+                      {formatDate(leadData.date)}
+                    </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Lead Status</Label>
                     <Select
@@ -474,7 +480,9 @@ export default function LeadDetailPage() {
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
 
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Lead Source</Label>
                     <Select
@@ -514,26 +522,26 @@ export default function LeadDetailPage() {
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
 
-                  <div className="space-y-2">
-                    <Label>Client Type</Label>
-                    <Select
-                      value={leadData.clientType as "Investor" | "custom buyer" | "first home buyer" | "seasonal investor" | "commercial buyer"}
-                      onValueChange={(value: "Investor" | "custom buyer" | "first home buyer" | "seasonal investor" | "commercial buyer") => 
-                        setLeadData({ ...leadData, clientType: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select client type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {clientTypes.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            {type.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="space-y-2">
+                  <Label>Client Type</Label>
+                  <Select
+                    value={leadData.clientType as "Investor" | "custom buyer" | "first home buyer" | "seasonal investor" | "commercial buyer"}
+                    onValueChange={(value: "Investor" | "custom buyer" | "first home buyer" | "seasonal investor" | "commercial buyer") => 
+                      setLeadData({ ...leadData, clientType: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select client type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {clientTypes.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </form>
             </CardContent>
@@ -552,7 +560,7 @@ export default function LeadDetailPage() {
                 <div className="space-y-4">
                   {(leadData.callHistory || []).map((call, index) => (
                     <div key={index} className="border rounded-lg p-4 space-y-3">
-                      <div className="flex justify-between items-start">
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                         <div>
                           <div className="font-medium">
                             Call on {formatDate(call.date)}
@@ -562,16 +570,17 @@ export default function LeadDetailPage() {
                           </div>
                         </div>
                         {call.recording && (
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" className="w-full sm:w-auto">
                             Play Recording
                           </Button>
                         )}
                       </div>
                       
                       <div className="space-y-3">
-                        <div className="flex gap-2">
+                        <div className="flex flex-col sm:flex-row gap-2">
                           <Input
                             placeholder="Add key points from the call..."
+                            className="flex-1"
                             onKeyDown={(e) => {
                               if (e.key === 'Enter' && (e.target as HTMLInputElement).value.trim()) {
                                 addCallPoint(index, (e.target as HTMLInputElement).value.trim())
@@ -581,6 +590,7 @@ export default function LeadDetailPage() {
                           />
                           <Button 
                             variant="outline"
+                            className="w-full sm:w-auto"
                             onClick={(e) => {
                               const input = e.currentTarget.previousElementSibling as HTMLInputElement
                               if (input.value.trim()) {
@@ -620,16 +630,16 @@ export default function LeadDetailPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-4">
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <Textarea
                       placeholder="Add a new note..."
                       value={newNote}
                       onChange={(e) => setNewNote(e.target.value)}
-                      className="flex-1"
+                      className="flex-1 min-h-[100px]"
                     />
                     <Button 
                       onClick={addNote}
-                      className="self-start"
+                      className="w-full sm:w-auto"
                       disabled={!newNote.trim() || isLoading}
                     >
                       <Plus className="h-4 w-4 mr-2" />
@@ -657,7 +667,7 @@ export default function LeadDetailPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>Budget Range</Label>
                       <div className="flex gap-2">
@@ -805,41 +815,7 @@ export default function LeadDetailPage() {
                       });
                     }
                   }}
-                  onUpdateTask={async (taskId: string, updates: Partial<Task>) => {
-                    if (!params?.leadId) return;
-                    try {
-                      const processedUpdates = {
-                        ...updates,
-                        date: updates.date ? new Date(updates.date).toISOString() : undefined
-                      };
-                      const response = await fetch(`/api/leads/${params.leadId}/tasks/${taskId}`, {
-                        method: "PATCH",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(processedUpdates)
-                      });
-
-                      if (!response.ok) {
-                        throw new Error("Failed to update task");
-                      }
-
-                      const updatedTasks = leadData.tasks?.map(task => 
-                        task.id === taskId ? { ...task, ...updates } : task
-                      ) || [];
-
-                      setLeadData({ ...leadData, tasks: updatedTasks } as Lead);
-
-                      toast({
-                        title: "Success",
-                        description: "Task updated successfully"
-                      });
-                    } catch (error) {
-                      toast({
-                        variant: "destructive",
-                        title: "Error", 
-                        description: "Failed to update task"
-                      });
-                    }
-                  }}
+                  onUpdateTask={handleTaskUpdate}
                 />
               </CardContent>
             </Card>

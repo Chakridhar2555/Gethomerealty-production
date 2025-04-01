@@ -761,13 +761,13 @@ export function LeadListing() {
   return (
     <Card>
       <CardHeader>
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <CardTitle>Lead Management</CardTitle>
-          <div className="flex flex-wrap gap-2 w-full md:w-auto">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <CardTitle className="text-xl sm:text-2xl">Lead Management</CardTitle>
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
             <Button
               variant={showNoCallsOnly ? "default" : "outline"}
               onClick={() => setShowNoCallsOnly(!showNoCallsOnly)}
-              className="bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 border-red-200 flex-1 md:flex-none"
+              className="bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 border-red-200 flex-1 sm:flex-none"
             >
               <Phone className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">No Calls</span>
@@ -775,7 +775,7 @@ export function LeadListing() {
             </Button>
             <Button
               variant={showWebsiteEnquiriesOnly ? "default" : "outline"}
-              className="bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-700 border-blue-200 flex-1 md:flex-none"
+              className="bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-700 border-blue-200 flex-1 sm:flex-none"
               onClick={() => setShowWebsiteEnquiriesOnly(!showWebsiteEnquiriesOnly)}
             >
               <Home className="h-4 w-4 mr-2" />
@@ -784,12 +784,12 @@ export function LeadListing() {
             </Button>
             <Button 
               onClick={() => setIsAddLeadOpen(true)}
-              className="bg-green-600 hover:bg-green-700 text-white flex-1 md:flex-none"
+              className="bg-green-600 hover:bg-green-700 text-white flex-1 sm:flex-none"
             >
               <Plus className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Add Lead</span>
             </Button>
-            <div className="relative flex-1 md:flex-none">
+            <div className="relative flex-1 sm:flex-none">
               <Input
                 type="file"
                 id="excel-upload"
@@ -874,7 +874,7 @@ export function LeadListing() {
         </div>
 
         {/* Search and filters */}
-        <div className="flex flex-col md:flex-row gap-2 mt-4">
+        <div className="flex flex-col sm:flex-row gap-2 mt-4">
           <div className="relative flex-1">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -1004,168 +1004,6 @@ export function LeadListing() {
               </div>
             </DialogContent>
           </Dialog>
-        </div>
-
-        {/* Additional filters */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-          <div className="space-y-2">
-            <Label>Lead Conversion</Label>
-            <Select
-              value={filters.conversion}
-              onValueChange={(value) => setFilters({ ...filters, conversion: value === "all" ? "" : value })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="All conversions" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                {leadConversions.map((conversion) => (
-                  <SelectItem key={conversion.value} value={conversion.value}>
-                    {conversion.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Language</Label>
-            <Select
-              value={filters.language}
-              onValueChange={(value) => setFilters({ ...filters, language: value === "all" ? "" : value })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="All languages" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                {languages.map((lang) => (
-                  <SelectItem key={lang.value} value={lang.value}>
-                    {lang.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Gender</Label>
-            <Select
-              value={filters.gender}
-              onValueChange={(value) => setFilters({ ...filters, gender: value === "all" ? "" : value })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="All genders" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="male">Male</SelectItem>
-                <SelectItem value="female">Female</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Religion</Label>
-            <Select
-              value={filters.religion}
-              onValueChange={(value) => setFilters({ ...filters, religion: value === "all" ? "" : value })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="All religions" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                {religions.map((religion) => (
-                  <SelectItem key={religion.value} value={religion.value}>
-                    {religion.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="space-y-2">
-            <Label>Age Range</Label>
-            <div className="flex gap-2">
-              <Input
-                type="number"
-                placeholder="Min"
-                value={filters.ageRange.min}
-                onChange={(e) => setFilters({
-                  ...filters,
-                  ageRange: { ...filters.ageRange, min: parseInt(e.target.value) }
-                })}
-              />
-              <Input
-                type="number"
-                placeholder="Max"
-                value={filters.ageRange.max}
-                onChange={(e) => setFilters({
-                  ...filters,
-                  ageRange: { ...filters.ageRange, max: parseInt(e.target.value) }
-                })}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Realtor Association</Label>
-            <Input
-              placeholder="Search by realtor association"
-              value={filters.realtorAssociation}
-              onChange={(e) => setFilters({ ...filters, realtorAssociation: e.target.value })}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Sales Range</Label>
-            <div className="flex gap-2">
-              <Input
-                type="number"
-                placeholder="Min sales"
-                value={filters.salesRange.min}
-                onChange={(e) => setFilters({
-                  ...filters,
-                  salesRange: { ...filters.salesRange, min: parseInt(e.target.value) }
-                })}
-              />
-              <Input
-                type="number"
-                placeholder="Max sales"
-                value={filters.salesRange.max}
-                onChange={(e) => setFilters({
-                  ...filters,
-                  salesRange: { ...filters.salesRange, max: parseInt(e.target.value) }
-                })}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Last Closed Date Range</Label>
-            <div className="flex gap-2">
-              <Input
-                type="date"
-                value={filters.lastClosedDateRange.start}
-                onChange={(e) => setFilters({
-                  ...filters,
-                  lastClosedDateRange: { ...filters.lastClosedDateRange, start: e.target.value }
-                })}
-              />
-              <Input
-                type="date"
-                value={filters.lastClosedDateRange.end}
-                onChange={(e) => setFilters({
-                  ...filters,
-                  lastClosedDateRange: { ...filters.lastClosedDateRange, end: e.target.value }
-                })}
-              />
-            </div>
-          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -1595,27 +1433,27 @@ export function LeadListing() {
           }
         }}
       >
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
           <DialogHeader className="space-y-4">
-            <div className="flex justify-between items-center">
-              <DialogTitle className="text-xl font-semibold">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <DialogTitle className="text-xl sm:text-2xl font-semibold">
                 {selectedLead?.name}
               </DialogTitle>
               {!isEditing ? (
                 <Button
                   variant="outline"
                   onClick={() => setIsEditing(true)}
-                  className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                  className="border-blue-600 text-blue-600 hover:bg-blue-50 w-full sm:w-auto"
                 >
                   <PlusCircle className="h-4 w-4 mr-2" />
                   Edit
                 </Button>
               ) : (
-                <div className="flex gap-2">
+                <div className="flex gap-2 w-full sm:w-auto">
                   <Button
                     variant="outline"
                     onClick={() => setIsEditing(false)}
-                    className="border-red-200 text-red-600 hover:bg-red-50"
+                    className="border-red-200 text-red-600 hover:bg-red-50 flex-1 sm:flex-none"
                   >
                     Cancel
                   </Button>
@@ -1650,7 +1488,7 @@ export function LeadListing() {
                         })
                       }
                     }}
-                    className="bg-green-600 text-white hover:bg-green-700"
+                    className="bg-green-600 text-white hover:bg-green-700 flex-1 sm:flex-none"
                   >
                     Save
                   </Button>
@@ -1673,16 +1511,16 @@ export function LeadListing() {
           {selectedLead && (
             <div className="mt-4">
               <Tabs defaultValue="details" className="w-full">
-                <TabsList className="w-full justify-start border-b">
-                  <TabsTrigger value="details" className="px-4">Details</TabsTrigger>
-                  <TabsTrigger value="preferences" className="px-4">Preferences</TabsTrigger>
-                  <TabsTrigger value="history" className="px-4">History</TabsTrigger>
-                  <TabsTrigger value="tasks" className="px-4">Tasks</TabsTrigger>
-                  <TabsTrigger value="notes" className="px-4">Notes</TabsTrigger>
+                <TabsList className="w-full justify-start border-b overflow-x-auto">
+                  <TabsTrigger value="details" className="px-4 whitespace-nowrap">Details</TabsTrigger>
+                  <TabsTrigger value="preferences" className="px-4 whitespace-nowrap">Preferences</TabsTrigger>
+                  <TabsTrigger value="history" className="px-4 whitespace-nowrap">History</TabsTrigger>
+                  <TabsTrigger value="tasks" className="px-4 whitespace-nowrap">Tasks</TabsTrigger>
+                  <TabsTrigger value="notes" className="px-4 whitespace-nowrap">Notes</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="details" className="mt-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Contact Information */}
                     <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
                       <h3 className="font-medium">Contact Information</h3>
@@ -1780,7 +1618,7 @@ export function LeadListing() {
                     {/* Demographics */}
                     <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
                       <h3 className="font-medium">Demographics</h3>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1">
                           <Label className="text-sm text-gray-500">Age</Label>
                           {isEditing ? (
@@ -1938,9 +1776,9 @@ export function LeadListing() {
                     </div>
 
                     {/* Assignment & Property */}
-                    <div className="space-y-3 p-4 bg-gray-50 rounded-lg md:col-span-2">
+                    <div className="space-y-3 p-4 bg-gray-50 rounded-lg sm:col-span-2">
                       <h3 className="font-medium">Assignment & Property</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1">
                           <Label className="text-sm text-gray-500">Assigned To</Label>
                           {isEditing ? (
@@ -1994,7 +1832,7 @@ export function LeadListing() {
                             <div className="text-sm">{selectedLead.location || 'Not specified'}</div>
                           )}
                         </div>
-                        <div className="space-y-1 md:col-span-2">
+                        <div className="space-y-1 sm:col-span-2">
                           <Label className="text-sm text-gray-500">Property</Label>
                           {isEditing ? (
                             <Input
@@ -2016,7 +1854,7 @@ export function LeadListing() {
 
                 <TabsContent value="preferences" className="mt-4">
                   <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label>Budget Range</Label>
                         {isEditing ? (
@@ -2113,7 +1951,7 @@ export function LeadListing() {
                     {selectedLead.callHistory && selectedLead.callHistory.length > 0 ? (
                       selectedLead.callHistory.map((call, index) => (
                         <div key={index} className="border rounded-lg p-3">
-                          <div className="flex justify-between items-center text-sm text-gray-500 mb-2">
+                          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm text-gray-500 mb-2 gap-2">
                             <span>{new Date(call.date).toLocaleString()}</span>
                             <span>{call.duration} minutes</span>
                           </div>
@@ -2137,7 +1975,7 @@ export function LeadListing() {
                     {selectedLead.tasks && selectedLead.tasks.length > 0 ? (
                       selectedLead.tasks.map((task, index) => (
                         <div key={index} className="border rounded-lg p-4">
-                          <div className="flex justify-between items-start">
+                          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
                               <div className="font-medium">{task.title}</div>
                               <div className="text-sm text-gray-500">{task.description}</div>

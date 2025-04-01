@@ -1,6 +1,0 @@
-(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[1211],{32612:function(e,n,s){Promise.resolve().then(s.bind(s,78452))},78452:function(e,n,s){"use strict";s.r(n),s.d(n,{default:function(){return r}});var t=s(3827),l=s(26863),i=s(27815),c=s(85754);function r(){return(0,t.jsx)(l.c,{children:(0,t.jsxs)("div",{className:"space-y-6",children:[(0,t.jsxs)("div",{className:"flex justify-between items-center",children:[(0,t.jsx)("h1",{className:"text-2xl font-semibold",children:"Email Templates"}),(0,t.jsx)(c.z,{children:"Create Template"})]}),(0,t.jsxs)(i.Zb,{children:[(0,t.jsx)(i.Ol,{children:(0,t.jsx)(i.ll,{children:"Available Templates"})}),(0,t.jsx)(i.aY,{children:(0,t.jsx)("p",{className:"text-gray-500",children:"No email templates found"})})]})]})})}},49108:function(e,n,s){"use strict";s.d(n,{Z:function(){return t}});/**
- * @license lucide-react v0.454.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */let t=(0,s(57977).Z)("ChevronLeft",[["path",{d:"m15 18-6-6 6-6",key:"1wnfg3"}]])}},function(e){e.O(0,[6860,9593,8792,162,703,4885,4011,6863,2971,8069,1744],function(){return e(e.s=32612)}),_N_E=e.O()}]);

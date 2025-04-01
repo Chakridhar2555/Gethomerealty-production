@@ -1,306 +1,151 @@
-'use client';
+"use client"
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card } from "@/components/ui/card";
-import { DashboardLayout } from "@/components/layout";
-import { getGeminiResponse } from '@/lib/gemini';
-import { format } from 'date-fns';
-import {
-  CalendarIcon,
-  Clock,
-  Users,
-  MapPin,
-  Phone,
-  Mail,
-  Building,
-  Loader2,
-  ArrowLeft,
-} from "lucide-react";
+import { useState, Suspense } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { CalendarEvent } from "@/lib/types"
+import { DashboardLayout } from "@/components/layout"
 
-interface EventFormData {
-  title: string;
-  date: string;
-  time: string;
-  type: 'viewing' | 'meeting' | 'open-house' | 'follow-up' | 'call';
-  location: string;
-  attendees: string;
-  contactPhone: string;
-  contactEmail: string;
-  propertyDetails: string;
-  description: string;
-  notes: string;
-}
+function AddEventForm() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const defaultDate = searchParams?.get("date") ? new Date(searchParams.get("date")!) : new Date()
 
-export default function AddEventPage() {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
-  const [formData, setFormData] = useState<EventFormData>({
-    title: '',
-    date: format(new Date(), 'yyyy-MM-dd'),
-    time: '',
-    type: 'meeting',
-    location: '',
-    attendees: '',
-    contactPhone: '',
-    contactEmail: '',
-    propertyDetails: '',
-    description: '',
-    notes: ''
-  });
+  const [formData, setFormData] = useState<Partial<CalendarEvent>>({
+    title: "",
+    start: defaultDate,
+    end: defaultDate,
+    type: "viewing",
+    description: "",
+  })
 
-  const handleInputChange = (field: keyof EventFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const getAISuggestions = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
     try {
-      setIsLoading(true);
-      const prompt = `As a real estate assistant, analyze this event and provide 3 specific suggestions or recommendations:
-      Event Type: ${formData.type}
-      Title: ${formData.title}
-      Property: ${formData.propertyDetails}
-      Description: ${formData.description}
-      
-      Consider: preparation steps, required documents, follow-up tasks, and best practices for real estate ${formData.type}.
-      Format suggestions as bullet points.`;
+      const response = await fetch("/api/calendar/events", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
 
-      const response = await getGeminiResponse(prompt, { type: 'calendar' });
-      const suggestions = response
-        .split('\n')
-        .filter(line => line.trim().startsWith('•'))
-        .map(line => line.trim().substring(1).trim());
-      
-      setAiSuggestions(suggestions);
-    } catch (error) {
-      console.error('Error getting AI suggestions:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      if (!response.ok) {
+        throw new Error("Failed to create event")
+      }
 
-  const handleSubmit = async () => {
-    try {
-      setIsLoading(true);
-      
-      // Get existing events from localStorage
-      const existingEvents = JSON.parse(localStorage.getItem('calendar_events') || '[]');
-      
-      // Create new event with AI suggestions
-      const newEvent = {
-        id: Date.now().toString(),
-        ...formData,
-        date: new Date(formData.date),
-        aiSuggestions
-      };
-      
-      // Save updated events
-      localStorage.setItem('calendar_events', JSON.stringify([...existingEvents, newEvent]));
-      
-      // Navigate back to calendar
-      router.push('/calendar');
+      router.push("/calendar")
     } catch (error) {
-      console.error('Error saving event:', error);
-    } finally {
-      setIsLoading(false);
+      console.error("Error creating event:", error)
     }
-  };
+  }
 
   return (
-    <DashboardLayout>
-      <div className="p-6">
-        <div className="flex items-center gap-4 mb-6">
-          <Button variant="ghost" onClick={() => router.back()}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Calendar
-          </Button>
-          <h1 className="text-2xl font-bold">Add New Event</h1>
-        </div>
-
-        <div className="flex gap-6">
-          {/* Form Section */}
-          <div className="flex-1">
-            <Card className="p-6">
-              <div className="space-y-6">
-                <div>
-                  <Label htmlFor="eventType">Event Type</Label>
-                  <select
-                    id="eventType"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                    value={formData.type}
-                    onChange={(e) => handleInputChange('type', e.target.value as EventFormData['type'])}
-                  >
-                    <option value="viewing">Property Viewing</option>
-                    <option value="meeting">Client Meeting</option>
-                    <option value="open-house">Open House</option>
-                    <option value="follow-up">Follow-up</option>
-                    <option value="call">Call</option>
-                  </select>
-                </div>
-
-                <div>
-                  <Label htmlFor="title">Event Title</Label>
-                  <Input
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) => handleInputChange('title', e.target.value)}
-                    placeholder="Enter event title"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="date">Date</Label>
-                    <div className="relative">
-                      <CalendarIcon className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                      <Input
-                        id="date"
-                        type="date"
-                        value={formData.date}
-                        onChange={(e) => handleInputChange('date', e.target.value)}
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="time">Time</Label>
-                    <div className="relative">
-                      <Clock className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                      <Input
-                        id="time"
-                        type="time"
-                        value={formData.time}
-                        onChange={(e) => handleInputChange('time', e.target.value)}
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="location">Location</Label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                    <Input
-                      id="location"
-                      value={formData.location}
-                      onChange={(e) => handleInputChange('location', e.target.value)}
-                      placeholder="Enter location"
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="attendees">Attendees</Label>
-                  <div className="relative">
-                    <Users className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                    <Input
-                      id="attendees"
-                      value={formData.attendees}
-                      onChange={(e) => handleInputChange('attendees', e.target.value)}
-                      placeholder="Enter attendees"
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="phone">Contact Phone</Label>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                      <Input
-                        id="phone"
-                        type="tel"
-                        value={formData.contactPhone}
-                        onChange={(e) => handleInputChange('contactPhone', e.target.value)}
-                        placeholder="Enter phone number"
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="email">Contact Email</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                      <Input
-                        id="email"
-                        type="email"
-                        value={formData.contactEmail}
-                        onChange={(e) => handleInputChange('contactEmail', e.target.value)}
-                        placeholder="Enter email"
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="property">Property Details</Label>
-                  <div className="relative">
-                    <Building className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                    <Input
-                      id="property"
-                      value={formData.propertyDetails}
-                      onChange={(e) => handleInputChange('propertyDetails', e.target.value)}
-                      placeholder="Enter property details"
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => handleInputChange('description', e.target.value)}
-                    placeholder="Enter event description"
-                    rows={3}
-                  />
-                </div>
-
-                <div className="flex justify-end gap-4">
-                  <Button variant="outline" onClick={() => router.back()}>
-                    Cancel
-                  </Button>
-                  <Button onClick={handleSubmit} disabled={isLoading}>
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Saving...
-                      </>
-                    ) : (
-                      'Save Event'
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </Card>
+    <Card>
+      <CardHeader className="p-4 sm:p-6">
+        <CardTitle className="text-lg sm:text-xl md:text-2xl">Add New Event</CardTitle>
+      </CardHeader>
+      <CardContent className="p-4 sm:p-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="title" className="text-sm sm:text-base">Event Title</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                required
+                className="text-sm sm:text-base"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="type" className="text-sm sm:text-base">Event Type</Label>
+              <Select
+                value={formData.type}
+                onValueChange={(value) => setFormData({ ...formData, type: value })}
+              >
+                <SelectTrigger className="text-sm sm:text-base">
+                  <SelectValue placeholder="Select event type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="viewing">Property Viewing</SelectItem>
+                  <SelectItem value="meeting">Meeting</SelectItem>
+                  <SelectItem value="open-house">Open House</SelectItem>
+                  <SelectItem value="follow-up">Follow-up</SelectItem>
+                  <SelectItem value="call">Call</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
-          {/* Image Section */}
-          <div className="w-[400px]">
-            <div className="sticky top-8">
-              <Image
-                src="/assets/860.jpeg"
-                alt="Calendar Event"
-                width={400}
-                height={600}
-                className="rounded-lg object-cover"
-                priority
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="start" className="text-sm sm:text-base">Start Date & Time</Label>
+              <Input
+                id="start"
+                type="datetime-local"
+                value={formData.start ? new Date(formData.start).toISOString().slice(0, 16) : ""}
+                onChange={(e) => setFormData({ ...formData, start: new Date(e.target.value) })}
+                required
+                className="text-sm sm:text-base"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="end" className="text-sm sm:text-base">End Date & Time</Label>
+              <Input
+                id="end"
+                type="datetime-local"
+                value={formData.end ? new Date(formData.end).toISOString().slice(0, 16) : ""}
+                onChange={(e) => setFormData({ ...formData, end: new Date(e.target.value) })}
+                required
+                className="text-sm sm:text-base"
               />
             </div>
           </div>
-        </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="description" className="text-sm sm:text-base">Description</Label>
+            <Textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              rows={4}
+              className="text-sm sm:text-base"
+            />
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <Button type="submit" className="w-full sm:w-auto text-sm sm:text-base">
+              Create Event
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.push("/calendar")}
+              className="w-full sm:w-auto text-sm sm:text-base"
+            >
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  )
+}
+
+export default function AddEventPage() {
+  return (
+    <DashboardLayout>
+      <div className="container mx-auto p-2 sm:p-4 md:p-6">
+        <Suspense fallback={<div>Loading...</div>}>
+          <AddEventForm />
+        </Suspense>
       </div>
     </DashboardLayout>
-  );
+  )
 } 

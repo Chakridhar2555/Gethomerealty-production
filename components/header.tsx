@@ -172,35 +172,68 @@ export function Header() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center h-auto sm:h-14 px-3 sm:px-4">
         <div className="flex items-center justify-between w-full sm:w-auto py-2 sm:py-0">
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="sm:hidden">
+            <Button variant="ghost" size="icon" className="sm:hidden" onClick={() => setShowDropdown(!showDropdown)}>
               <Menu className="h-5 w-5" />
             </Button>
             <span className="font-semibold">Admin</span>
           </div>
           <div className="flex items-center gap-2 sm:hidden">
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
             </Button>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}>
               <Search className="h-5 w-5" />
             </Button>
           </div>
         </div>
         
-        <div className="w-full pb-2 sm:pb-0 sm:w-auto sm:ml-4 sm:flex-1">
-          <div className="relative w-full">
+        <div className={`w-full pb-2 sm:pb-0 sm:w-auto sm:ml-4 sm:flex-1 ${isMobileSearchOpen ? 'block' : 'hidden sm:block'}`}>
+          <div className="relative w-full" ref={searchRef}>
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
             <Input
               type="search"
               placeholder="Search..."
               className="w-full pl-9 pr-4 h-9 sm:h-10 text-sm sm:text-base"
+              value={searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
             />
+            {showResults && searchResults.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border rounded-md shadow-lg max-h-[60vh] overflow-y-auto z-50">
+                {searchResults.map((result) => (
+                  <div
+                    key={result.id}
+                    className="flex items-center gap-2 p-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                      router.push(result.url);
+                      setShowResults(false);
+                      setSearchQuery('');
+                    }}
+                  >
+                    {getSearchIcon(result.type)}
+                    <div>
+                      <div className="font-medium">{result.title}</div>
+                      <div className="text-sm text-gray-500">{result.subtitle}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="hidden sm:flex items-center gap-4 ml-auto">
-          <Button variant="ghost" size="icon">
+        <div className={`hidden sm:flex items-center gap-4 ml-auto ${showDropdown ? 'flex flex-col absolute top-full left-0 right-0 bg-white border-b p-2 sm:relative sm:flex-row sm:p-0 sm:border-0' : ''}`}>
+          <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                {unreadCount}
+              </span>
+            )}
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -209,7 +242,7 @@ export function Header() {
                   <AvatarImage src="/placeholder-avatar.png" alt="User" />
                   <AvatarFallback>U</AvatarFallback>
                 </Avatar>
-                <span className="hidden md:inline-block">User</span>
+                <span className="hidden md:inline-block">{user?.name || 'User'}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">

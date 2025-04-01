@@ -23,6 +23,10 @@ const VALID_CREDENTIALS = {
   status: "active"
 }
 
+export async function GET() {
+  return NextResponse.json({ message: "Auth endpoint" })
+}
+
 export async function POST(request: Request) {
   try {
     const { email, password } = await request.json()

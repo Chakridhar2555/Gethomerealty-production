@@ -52,4 +52,18 @@ export async function PUT(
       { status: 500 }
     )
   }
+}
+
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  return NextResponse.json({ message: "Get favorite status", id: params.id })
+}
+
+export async function POST(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  return NextResponse.json({ message: "Toggle favorite status", id: params.id })
 } 
